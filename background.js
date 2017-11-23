@@ -8,6 +8,16 @@ chrome.tabs.onActivated.addListener(function(evt){
     });
 });
 
+chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.storage.sync.get("tabs", function(val) {
+        var tabName = tab.url.split('/')[2];
+        var tabData = search_tabs(tabName, val.tabs);
+        alert("You've spent " + tabData.sum/(1000*60) + " minutes on " +
+              tabData.name + " site");
+    });
+});
+
+
 function start(tab){
     var tabName = tab.url.split('/')[2];
          chrome.storage.sync.get("tabs", function(val) {
