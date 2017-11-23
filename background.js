@@ -1,14 +1,24 @@
-chrome.tabs.onActivated.addListener(function(evt){ 
-    chrome.tabs.get(evt.tabId, function(tab){ 
+chrome.tabs.onUpdated.addListener(function(tabID, change, tab){ 
+    start(tab);
+});
+
+chrome.tabs.onActivated.addListener(function(evt){
+    chrome.tabs.get(evt.tabId, function(tab){
+        start(tab);
+    });
+});
+
+function start(tab){
+    var tabName = tab.url.split('/')[2];
          chrome.storage.sync.get("tabs", function(val) {
              if (Object.keys(val).length === 0) {
-                 chrome.storage.sync.set({"tabs": [{'url': tab.url,
+                 chrome.storage.sync.set({"tabs": [{'name': tabName,
                                           'start': Date.now(),
                                           'end': 0,
                                           'sum': 0}]});
              } else {
                  var tabs = val.tabs;
-                 var current_tab = search_tabs(tab.url, tabs);
+                 var current_tab = search_tabs(tabName, tabs);
                  var empty_tab = search_empty_tab(tabs);
                  if (typeof(empty_tab) != 'undefined') {
                      var timestamp = Date.now();
@@ -18,7 +28,7 @@ chrome.tabs.onActivated.addListener(function(evt){
                  }
                  if (typeof(current_tab) == 'undefined') {
                      console.log("1");
-                     tabs.push({'url': tab.url,
+                     tabs.push({'name': tabName,
                                 'start': Date.now(),
                                 'end': 0,
                                 'sum': 0});
@@ -31,12 +41,11 @@ chrome.tabs.onActivated.addListener(function(evt){
                  }
              };
         });
-    }); 
-});
+}
 
 function search_tabs(nameKey, myArray){
     for (var i=0; i < myArray.length; i++) {
-        if (myArray[i].url === nameKey) {
+        if (myArray[i].name === nameKey) {
             return myArray[i];
         }
     }
