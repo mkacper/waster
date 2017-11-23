@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+
+    "name": "Waster",
+    "description": "This extension will show you how much time you've wasted, you bastard!",
+    "version": "0.1",
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "activeTab",
+        "background",
+        "tabs",
+        "storage"
+    ]
+}
