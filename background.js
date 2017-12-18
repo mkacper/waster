@@ -3,18 +3,13 @@ chrome.tabs.onUpdated.addListener(function(tabID, change, tab){
 });
 
 chrome.tabs.onActivated.addListener(function(evt){
+    console.log("dupa");
     chrome.tabs.get(evt.tabId, function(tab){
         start(tab);
     });
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.storage.sync.get("tabs", function(val) {
-        var tabName = tab.url.split('/')[2];
-        var tabData = search_tabs(tabName, val.tabs);
-        alert("You've spent " + tabData.sum/(1000*60) + " minutes on " +
-              tabData.name + " site");
-    });
 });
 
 
@@ -68,3 +63,27 @@ function search_empty_tab(myArray){
         }
     }
 };
+
+var query = { active: true, currentWindow: true };
+function callback(tabs) {
+}
+console.log("I am background.js");
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.request == "get_stat"){
+            chrome.tabs.query(query, function(tabs){
+                var tab = tabs[0];
+                chrome.storage.sync.get("tabs", function(val) {
+                    var tabName = tab.url.split('/')[2];
+                    var tabData = search_tabs(tabName, val.tabs);
+                    var message = "You've spent " + tabData.sum/(1000*60) + " minutes on " +
+                        tabData.name + " site";
+                    console.log("send " + message);
+                    sendResponse({
+                        response: message
+                    });
+                });
+            });
+        }
+        return true;
+    });
