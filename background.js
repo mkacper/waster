@@ -3,7 +3,6 @@ chrome.tabs.onUpdated.addListener(function(tabID, change, tab){
 });
 
 chrome.tabs.onActivated.addListener(function(evt){
-    console.log("dupa");
     chrome.tabs.get(evt.tabId, function(tab){
         start(tab);
     });
@@ -76,11 +75,11 @@ chrome.runtime.onMessage.addListener(
                 chrome.storage.sync.get("tabs", function(val) {
                     var tabName = tab.url.split('/')[2];
                     var tabData = search_tabs(tabName, val.tabs);
-                    var message = "You've spent " + tabData.sum/(1000*60) + " minutes on " +
+                    var message = "You've spent " +
+                        Math.round(tabData.sum/(1000*60)) + " minutes on " +
                         tabData.name + " site";
-                    console.log("send " + message);
                     sendResponse({
-                        response: message
+                        response: {'msg': message, 'tabs': val.tabs}
                     });
                 });
             });
